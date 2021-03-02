@@ -331,10 +331,10 @@ class EMBLFlexHCD(SampleChanger):
     def chained_load(self, old_sample, sample):
         return self._do_load(sample)
 
-    def _set_loaded_sample_and_prepare(self, sample):
+    def _set_loaded_sample_and_prepare(self, sample, previous_sample):
         res = False
 
-        if not -1 in sample:
+        if not -1 in sample and sample != previous_sample:
             self._set_loaded_sample(self.get_sample_with_address(sample))
             self._prepare_centring_task()
             res = True
@@ -476,9 +476,14 @@ class EMBLFlexHCD(SampleChanger):
 
     def _do_load(self, sample=None):
         self._update_state()
+        previous_sample = tuple(
+            self._execute_cmd_exporter(
+                "getMountedSamplePosition", attribute=True
+            )
+        )
 
         # We wait for the sample changer if its already doing something, like defreezing
-        # wait for 6 minutes then timeout !
+        # wait for 10 minutes then timeout !
         self._wait_ready(600)
 
         # Start loading
@@ -527,7 +532,7 @@ class EMBLFlexHCD(SampleChanger):
         for msg in self.get_robot_exceptions():
             logging.getLogger("HWR").error(msg)
 
-        return self._set_loaded_sample_and_prepare(loaded_sample)
+        return self._set_loaded_sample_and_prepare(loaded_sample, previous_sample)
 
     def _do_unload(self, sample=None):
         self._execute_cmd_exporter(
