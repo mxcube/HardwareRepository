@@ -563,6 +563,9 @@ class EMBLFlexHCD(SampleChanger):
     def _do_abort(self):
         self._execute_cmd_exporter("abort", command=True)
 
+    def _do_trash(self):
+        self._execute_cmd_exporter("trashMountedSample", command=True)
+
     def _do_reset(self):
         self._execute_cmd_exporter("homeClear", command=True)
 
