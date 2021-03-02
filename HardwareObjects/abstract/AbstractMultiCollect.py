@@ -702,9 +702,9 @@ class AbstractMultiCollect(object):
         # self.set_detector_mode(data_collect_parameters["detector_mode"])
 
         with cleanup(self.data_collection_cleanup):
-            if not self.safety_shutter_opened():
-                logging.getLogger("user_level_log").info("Opening safety shutter")
-                self.open_safety_shutter()
+            #if not self.safety_shutter_opened():
+            logging.getLogger("user_level_log").info("Opening safety shutter")
+            self.open_safety_shutter()
 
             flux_threshold = self.getProperty("flux_threshold", False)
             cryo_threshold = self.getProperty("cryo_threshold", False)
