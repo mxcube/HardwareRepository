@@ -1,4 +1,8 @@
 # DEPRICATED SEE the [mxcubecore repository](https://github.com/mxcube/mxcubecore) instead
+HardwareRepository have been renamed to mxcubecore as part of final step of a refactroring
+process. mxcubecore contains the exact same funtionality but the name has been changed to
+something that the community thinks carries more meaning. All the work now continues in
+the mxcubecore repository.
 
 [![Build Status](https://travis-ci.org/mxcube/HardwareRepository.svg?branch=master)](https://travis-ci.org/mxcube/HardwareRepository)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
