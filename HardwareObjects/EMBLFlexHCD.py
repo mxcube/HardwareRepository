@@ -209,7 +209,7 @@ class EMBLFlexHCD(SampleChanger):
         return
 
     def _do_update_info(self):
-        # self._update_selection()
+        self._update_selection()
         self._update_state()
 
     def _do_scan(self, component, recursive=True, saved={"barcodes": None}):
@@ -571,7 +571,9 @@ class EMBLFlexHCD(SampleChanger):
         self._execute_cmd_exporter("abort", command=True)
 
     def _do_trash(self):
+        self.prepare_load(wait=True)
         self._execute_cmd_exporter("trashMountedSample", command=True)
+        self._reset_loaded_sample()
 
     def _do_reset(self):
         self._execute_cmd_exporter("homeClear", command=True)
