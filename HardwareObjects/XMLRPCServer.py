@@ -123,6 +123,7 @@ class XMLRPCServer(HardwareObject):
         self._server.register_function(self.get_default_acquisition_parameters)
 
         self._server.register_function(self.get_diffractometer_positions)
+        self._server.register_function(self.get_resolution_limits)
         self._server.register_function(self.move_diffractometer)
         self._server.register_function(self.save_snapshot)
         self._server.register_function(self.cryo_temperature)
@@ -417,6 +418,9 @@ class XMLRPCServer(HardwareObject):
             self.wokflow_in_progress = True
         else:
             self.wokflow_in_progress = False
+
+    def get_resolution_limits(self):
+        return HWR.beamline.resolution.get_limits()
 
     def get_diffractometer_positions(self):
         return HWR.beamline.diffractometer.get_positions()
