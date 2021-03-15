@@ -975,7 +975,7 @@ class AbstractMultiCollect(object):
             # Bug fix for MD2/3(UP): diffractometer still has things to do even after the last frame is taken (decelerate motors and
             # possibly download diagnostics) so we cannot trigger the cleanup (that will send an abort on the diffractometer) as soon as
             # the last frame is counted
-            self.diffractometer().wait_ready(60)
+            self.diffractometer().wait_ready(1000)
 
         # data collection done
         self.data_collection_end_hook(data_collect_parameters)

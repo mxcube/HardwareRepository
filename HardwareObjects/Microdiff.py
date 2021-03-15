@@ -343,7 +343,7 @@ class Microdiff(MiniDiff.MiniDiff):
         print("oscil scan started at ----------->", time.time())
         if wait:
             self._wait_ready(
-                600
+                20 * 60
             )  # timeout of 10 min # Changed on 20180406 Daniele, because of long exposure time set by users
             print("finished at ---------->", time.time())
 
@@ -379,7 +379,7 @@ class Microdiff(MiniDiff.MiniDiff):
 
         print("helical scan started at ----------->", time.time())
         if wait:
-            self._wait_ready(900)  # timeout of 15 min
+            self._wait_ready(20 * 60)  # timeout of 15 min
             print("finished at ---------->", time.time())
 
     def oscilScanMesh(
