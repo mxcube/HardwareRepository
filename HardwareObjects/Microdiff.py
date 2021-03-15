@@ -288,7 +288,7 @@ class Microdiff(MiniDiff.MiniDiff):
                         timeout = 40
                     self._wait_ready(timeout)
         else:
-            print("moveToPhase - Ready is: ", self._ready())
+            logging.getLogger("HWR").exception("")
 
     def get_current_phase(self):
         return self.readPhase.get_value()
