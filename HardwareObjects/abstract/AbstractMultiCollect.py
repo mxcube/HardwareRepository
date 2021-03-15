@@ -1090,12 +1090,13 @@ class AbstractMultiCollect(object):
                         ),
                     )
 
-            try:
-                self.__safety_shutter_close_task = gevent.spawn_later(
-                    10 * 60, self.close_safety_shutter, timeout=10
-                )
-            except Exception:
-                logging.exception("Could not close safety shutter")
+            if self.getProperty("close_safety_shutter_if_idle", False):
+                try:
+                    self.__safety_shutter_close_task = gevent.spawn_later(
+                        10 * 60, self.close_safety_shutter, timeout=10
+                    )
+                except Exception:
+                    logging.exception("Could not close safety shutter")
         finally:
             self.emit(
                 "collectEnded",
