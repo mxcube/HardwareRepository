@@ -129,7 +129,12 @@ class MD2MultiCollect(ESRFMultiCollect):
                 wait=True,
             )
         else:
-            diffr.oscilScan(start, end, exptime, wait=True)
+            still = math.fabs(end - start) < 1e-4
+
+            if still:
+                self.oscillation_task = self.no_oscillation(exptime, wait=False)
+            else:
+                diffr.oscilScan(start, end, exptime, wait=True)
 
     @task
     def prepare_acquisition(
