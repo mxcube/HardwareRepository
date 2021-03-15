@@ -603,18 +603,20 @@ class ESRFMultiCollect(AbstractMultiCollect, HardwareObject):
             time.sleep(0.02)
 
     def open_safety_shutter(self):
-        try:
-            HWR.beamline.safety_shutter.set_value(
-                HWR.beamline.safety_shutter.VALUES.OPEN, timeout=10
-            )
-        except Exception:
-            logging.getLogger("HWR").exception("")
+        if HWR.beamline.safety_shutter.get_value().name == "CLOSED":
+            try:
+                logging.getLogger("user_level_log").info("Opening safety shutter")
+                HWR.beamline.safety_shutter.set_value(
+                    HWR.beamline.safety_shutter.VALUES.OPEN, timeout=10
+                )
+            except Exception:
+                logging.getLogger("HWR").exception("")
 
     def safety_shutter_opened(self):
         state = False
 
         try:
-            state = HWR.beamline.safety_shutter.get_state().name == "OPENED"
+            state = HWR.beamline.safety_shutter.get_value().name == "OPEN"
         except Exception:
             logging.getLogger("HWR").exception("")
             state = True
@@ -623,12 +625,13 @@ class ESRFMultiCollect(AbstractMultiCollect, HardwareObject):
 
     @task
     def close_safety_shutter(self):
-        try:
-            HWR.beamline.safety_shutter.set_value(
-                HWR.beamline.safety_shutter.VALUES["CLOSED"]
-            )
-        except Exception:
-            logging.getLogger("HWR").exception("")
+        if HWR.beamline.safety_shutter.get_value().name == "OPEN":
+            try:
+                HWR.beamline.safety_shutter.set_value(
+                    HWR.beamline.safety_shutter.VALUES.CLOSED
+                )
+            except Exception:
+                logging.getLogger("HWR").exception("")
 
     @task
     def prepare_intensity_monitors(self):
