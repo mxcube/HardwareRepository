@@ -2,6 +2,7 @@ import gevent
 import shutil
 import logging
 import os
+import math
 
 from HardwareRepository.TaskUtils import task
 from .ESRFMultiCollect import ESRFMultiCollect
