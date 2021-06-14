@@ -2,7 +2,7 @@ from dispatcher import saferef
 import gevent
 import gevent.monkey
 from gevent import _threading
-from gevent.queue import Queue, Empty
+
 from gevent.event import Event
 import numpy
 
@@ -82,7 +82,7 @@ class _Poller:
         self.error_callback_ref = saferef.safe_ref(error_callback)
         self.compare = compare
         self.old_res = NotInitializedValue
-        self.queue = Queue()
+        self.queue = _threading.Queue()
         self.delay = 0
         self.stop_event = Event()
 
@@ -98,6 +98,7 @@ class _Poller:
     def stop(self):
         self.stop_event.set()
         del POLLERS[self.get_id()]
+        self.run_task.kill()
 
     def is_stopped(self):
         return self.stop_event.is_set()
@@ -133,7 +134,7 @@ class _Poller:
         while True:
             try:
                 res = self.queue.get_nowait()
-            except Empty:
+            except _threading.Queue.Empty:
                 break
 
             if isinstance(res, PollingException):
@@ -149,6 +150,7 @@ class _Poller:
         sleep = gevent.monkey._get_original("time", ["sleep"])[0]
 
         self.async_watcher.start(self.new_event)
+
         err_callback_args = None
         error_cb = None
         first_run = True
@@ -200,9 +202,9 @@ class _Poller:
                 if new_value:
                     self.old_res = res
                     self.queue.put(res)
-                    self.async_watcher.send()
-
+                    #self.async_watcher.send()
             sleep(self.polling_period / 1000.0)
 
         if error_cb is not None:
             self.async_watcher.send()
+

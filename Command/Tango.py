@@ -20,8 +20,9 @@
 
 import logging
 import gevent
-import gevent.event
-from gevent.queue import Queue
+from gevent.event import Event
+from gevent import _threading
+
 from HardwareRepository.CommandContainer import (
     CommandObject,
     ChannelObject,
@@ -35,7 +36,6 @@ gevent_version = list(map(int,gevent.__version__.split('.')))
 try:
     import PyTango
     from PyTango.gevent import DeviceProxy
-    from PyTango import DeviceProxy as RawDeviceProxy
 except ImportError:
     logging.getLogger("HWR").warning("Tango support is not available.")
 
@@ -134,7 +134,7 @@ class E:
 
 
 class TangoChannel(ChannelObject):
-    _tangoEventsQueue = Queue()
+    _tangoEventsQueue = _threading.Queue()
     _eventReceivers = {}
 
     if gevent_version < [1,3,0]:
@@ -198,9 +198,8 @@ class TangoChannel(ChannelObject):
         # self.init_poller.stop()
 
         if isinstance(self.polling, int):
+            self.raw_device = DeviceProxy(self.deviceName)
 
-            self.raw_device = RawDeviceProxy(self.device_name)
-            
             Poller.poll(
                 self.poll,
                 polling_period=self.polling,
