@@ -207,6 +207,13 @@ class Microdiff(MiniDiff.MiniDiff):
         self.wait_ready = self._wait_ready
         self.pixelsPerMmY, self.pixelsPerMmZ = self.getCalibrationData(None)
 
+        self.readPhase.connectSignal("update", self._update_value)
+
+    def _update_value(self, value=None):
+        if value is None:
+            value =  self.get_current_phase()
+        self.emit("valueChanged", (value))
+
     def getMotorToExporterNames(self):
         MOTOR_TO_EXPORTER_NAME = {
             "focus": self.focusMotor.get_property("actuator_name"),
@@ -274,6 +281,14 @@ class Microdiff(MiniDiff.MiniDiff):
                 detcover.set_in(10)
         except:
             logging.getLogger("HWR").exception("")
+
+    def phase_prepare(self, phase):
+        if phase == "Centring":
+            try:
+                diffr = self.getObjectByRole("controller").diffractometer
+                diffr.prepare("centre")
+            except:
+                logging.getLogger("HWR").exception("Cannot prepare centring")
 
     def set_light_in(self):
         logging.getLogger("HWR").info("Moving backlight in")
