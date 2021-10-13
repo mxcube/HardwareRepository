@@ -308,6 +308,7 @@ class Microdiff(MiniDiff.MiniDiff):
 
                 if phase in ["BeamLocation", "Transfer", "Centring"]:
                     self.close_detector_cover()
+                    self.phase_prepare(phase)
 
                 self.movePhase(phase)
                 if wait:
