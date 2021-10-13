@@ -36,6 +36,7 @@ gevent_version = list(map(int,gevent.__version__.split('.')))
 try:
     import PyTango
     from PyTango.gevent import DeviceProxy
+    from PyTango import DeviceProxy as RawDeviceProxy
 except ImportError:
     logging.getLogger("HWR").warning("Tango support is not available.")
 
@@ -326,8 +327,8 @@ class TangoChannel(ChannelObject):
         self.value = value
         self.emit("update", value)
 
-    def get_value(self, force=False):
-        self._device_initialized.wait(timeout=3)
+    def getValue(self):
+       # self._device_initialized.wait(timeout=3)
 
         
         if self.read_as_str:
