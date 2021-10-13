@@ -9,7 +9,7 @@ from HardwareRepository.ConvertUtils import string_types
 from HardwareRepository import HardwareRepository as HWR
 
 from ESRF.ESRFMetadataManagerClient import MXCuBEMetadataClient
-
+from HardwareRepository.utils import nicoproc
 
 try:
     from httplib import HTTPConnection
@@ -117,6 +117,9 @@ class ESRFMultiCollect(AbstractMultiCollect, HardwareObject):
 
     @task
     def data_collection_end_hook(self, data_collect_parameters):
+        if nicoproc.USE_NICOPROC:
+             nicoproc.stop()
+
         self._detector._emit_status()
         self._metadataClient.end(data_collect_parameters)
 
@@ -195,6 +198,8 @@ class ESRFMultiCollect(AbstractMultiCollect, HardwareObject):
             self.close_fast_shutter()
             self.stop_oscillation()
             HWR.beamline.detector.stop_acquisition()
+            if nicoproc.USE_NICOPROC:
+                nicoproc.stop()
         except Exception:
             logging.getLogger("HWR").exception("")
 
