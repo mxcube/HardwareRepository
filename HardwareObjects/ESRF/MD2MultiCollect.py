@@ -2,7 +2,6 @@ import gevent
 import shutil
 import logging
 import os
-import math
 
 from HardwareRepository.TaskUtils import task
 from .ESRFMultiCollect import ESRFMultiCollect
@@ -130,12 +129,7 @@ class MD2MultiCollect(ESRFMultiCollect):
                 wait=True,
             )
         else:
-            still = math.fabs(end - start) < 1e-4
-
-            if still:
-                self.oscillation_task = self.no_oscillation(exptime, wait=False)
-            else:
-                diffr.oscilScan(start, end, exptime, wait=True)
+            diffr.oscilScan(start, end, exptime, wait=True)
 
     @task
     def prepare_acquisition(
