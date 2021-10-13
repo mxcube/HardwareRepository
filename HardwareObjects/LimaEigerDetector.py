@@ -27,7 +27,6 @@ class LimaEigerDetector(AbstractDetector):
         for channel_name in (
             "acq_status",
             "acq_trigger_mode",
-            "acq_nb_sequences",
             "saving_mode",
             "acq_nb_frames",
             "acq_expo_time",
@@ -67,7 +66,7 @@ class LimaEigerDetector(AbstractDetector):
             {"type": "tango", "name": "reset", "tangoname": lima_device}, "reset"
         )
         self.add_channel(
-            {"type": "tango", "name": "set_image_header", "tangoname": lima_device},
+            {"type": "tango", "name": "saving_common_header", "tangoname": lima_device},
             "saving_common_header",
         )
 
@@ -102,8 +101,9 @@ class LimaEigerDetector(AbstractDetector):
         number_of_images,
         comment,
         mesh,
-        mesh_num_lines
-    ):        
+        mesh_num_lines,
+    ):
+        """
         diffractometer_positions = HWR.beamline.diffractometer.get_positions()
         self.start_angles = list()
         for i in range(number_of_images):
@@ -141,44 +141,53 @@ class LimaEigerDetector(AbstractDetector):
         self.header["Tau"] = "= 0 s"
         self.header["Exposure_period"] = "%f s" % (exptime + self.get_deadtime())
         self.header["Exposure_time"] = "%f s" % exptime
+        """
 
-        beam_x, beam_y = self.get_beam_position()
+        self.stop()
+        self.wait_ready()
 
+        beam_x, beam_y = HWR.beamline.detector.get_beam_position()
         header_info = [
             "beam_center_x=%s" % (beam_x / 7.5000003562308848e-02),
             "beam_center_y=%s" % (beam_y / 7.5000003562308848e-02),
-            "wavelength=%s" % HWR.beamline.energy.get_wavelength(),
             "detector_distance=%s"
             % (HWR.beamline.detector.distance.get_value() / 1000.0),
             "omega_start=%0.4f" % start,
             "omega_increment=%0.4f" % osc_range,
+            "wavelength=%s" % HWR.beamline.energy.get_wavelength(),
         ]
-        self.get_channel_object("set_image_header").set_value(header_info)
+        # either we set the wavelength, or we set the energy_threshold
+        # up to now we were doing both (lost of time)
+        # "wavelength=%s" % HWR.beamline.energy.get_wavelength(),
+        # self.set_energy_threshold(HWR.beamline.energy.get_value())
 
-        self.reset()
-        self.wait_ready()
-
-        self.set_energy_threshold(HWR.beamline.energy.get_value())
+        self.get_channel_object("saving_common_header").set_value(header_info)
 
         if mesh:
+            """
             self.get_channel_object("acq_trigger_mode").set_value("EXTERNAL_TRIGGER_SEQUENCES")
             self.get_channel_object("acq_nb_sequences").set_value(mesh_num_lines)
-        elif osc_range < 1e-4:
-            self.set_channel_value("acq_trigger_mode", "INTERNAL_TRIGGER")
+            """
+            # self.get_channel_object("acq_trigger_mode").set_value("EXTERNAL_GATE")
+            self.get_channel_object("acq_trigger_mode").set_value(
+                "EXTERNAL_TRIGGER_MULTI"
+            )
         else:
             self.set_channel_value("acq_trigger_mode", "EXTERNAL_TRIGGER")
 
         self.get_channel_object("saving_frame_per_file").set_value(
             min(100, number_of_images)
         )
+
+        # 'MANUAL', 'AUTO_FRAME', 'AUTO_SEQUENCE
         self.get_channel_object("saving_mode").set_value("AUTO_FRAME")
         logging.info("Acq. nb frames = %d", number_of_images)
         self.get_channel_object("acq_nb_frames").set_value(number_of_images)
         self.get_channel_object("acq_expo_time").set_value(exptime)
+        # 'ABORT', 'OVERWRITE', 'APPEND'
         self.get_channel_object("saving_overwrite_policy").set_value("OVERWRITE")
+        # 'SOFTWARE', 'HARDWARE'
         self.get_channel_object("saving_managed_mode").set_value("HARDWARE")
-
-        self.wait_ready()
 
     def set_energy_threshold(self, energy):
         minE = self.get_property("minE")
@@ -200,7 +209,6 @@ class LimaEigerDetector(AbstractDetector):
             dirname = dirname[len(os.path.sep) :]
 
         saving_directory = os.path.join(self.get_property("buffer"), dirname)
-
         self.wait_ready()
 
         self.get_channel_object("saving_directory").set_value(saving_directory)
@@ -246,6 +254,6 @@ class LimaEigerDetector(AbstractDetector):
 
     def _emit_status(self):
         self.emit("statusChanged", self.status)
-        
+
     def recover_from_failure(self):
         pass
