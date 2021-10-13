@@ -55,11 +55,10 @@ class MicrodiffLightBeamstop(ExporterNState):
         """
         if value.name == "IN":
             _pos = self._beamstop_obj.get_value()
-
             # only move if the beamstop is closer than the sefety_position
-            if _pos < self.safety_position:
+            if _pos is self._beamstop_obj.VALUES.IN:
                 self._saved_value = _pos
-                self._beamstop_obj.set_value(self.safety_position, timeout=20)
+                self._beamstop_obj.set_value(self._beamstop_obj.VALUES.OUT, timeout=20)
 
             super(MicrodiffLightBeamstop, self)._set_value(value)
 
