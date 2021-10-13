@@ -257,7 +257,8 @@ class Microdiff(MiniDiff.MiniDiff):
         # None means infinite timeout
         # <=0 means default timeout
         if timeout is not None and timeout <= 0:
-            timeout = self.timeout
+            logging.getLogger("HWR").warning("DEBUG: Strange timeout value passed %s" % str(timeout))
+            timeout = 30
         with gevent.Timeout(
             timeout, RuntimeError("Timeout waiting for diffractometer to be ready")
         ):
