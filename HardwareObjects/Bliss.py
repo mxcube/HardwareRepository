@@ -21,6 +21,7 @@ def all_equal(iterable):
 
 def watch_data(scan_node, scan_new_callback, scan_data_callback, scan_end_callback):
     """Watch for data coming from the bliss scans. Exclude the simple count"""
+    # hack to not execute it
     if scan_node:
         return
     scan_info = scan_node._info.get_all()
