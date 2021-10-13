@@ -3,6 +3,7 @@ import pickle
 import gevent
 import logging
 import time
+import ast
 
 from HardwareRepository.TaskUtils import task
 from HardwareRepository.HardwareObjects.abstract.AbstractSampleChanger import (
@@ -76,19 +77,22 @@ class Basket(Container):
 class Cell(Container):
     __TYPE__ = "Cell"
 
-    def __init__(self, container, number, sc3_pucks=True):
+    def __init__(self, container, number, puck_type="SC3"):
         super(Cell, self).__init__(
             self.__TYPE__, container, Cell.get_cell_address(number), True
         )
         self.present = True
-        if sc3_pucks:
+
+        if puck_type=="SC3":
             for i in range(3):
                 self._add_component(
-                    Basket(self, number, i + 1, unipuck=1 - (number % 2))
+                    Basket(self, number, i + 1, unipuck=False)
                 )
         else:
             for i in range(3):
-                self._add_component(Basket(self, number, i + 1, unipuck=True))
+                self._add_component(
+                    Basket(self, number, i + 1, unipuck=True)
+                )
 
     @staticmethod
     def get_cell_address(cell_number):
@@ -112,10 +116,11 @@ class EMBLFlexHCD(SampleChanger):
         super(EMBLFlexHCD, self).__init__(self.__TYPE__, True, *args, **kwargs)
 
     def init(self):
-        sc3_pucks = self.getProperty("sc3_pucks", True)
+        _pucks = '["UNI", "UNI", "UNI", "UNI", "UNI", "UNI", "UNI", "UNI"]'
+        pucks = ast.literal_eval(self.getProperty("puck_configuration", _pucks))
 
         for i in range(8):
-            cell = Cell(self, i + 1, sc3_pucks)
+            cell = Cell(self, i + 1, pucks[i])
             self._add_component(cell)
 
         self.robot = self.getProperty("tango_device")
