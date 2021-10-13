@@ -275,6 +275,18 @@ class Microdiff(MiniDiff.MiniDiff):
         except:
             logging.getLogger("HWR").exception("")
 
+    def set_light_in(self):
+        logging.getLogger("HWR").info("Moving backlight in")
+        venum = self.get_object_by_role("BackLightSwitch").VALUES
+        self.get_object_by_role("BackLightSwitch").handle_beamstop(venum.IN)
+        self.wait_ready()
+
+    def set_light_out(self):
+        logging.getLogger("HWR").info("Moving backlight out")
+        venum = self.get_object_by_role("BackLightSwitch").VALUES
+        self.get_object_by_role("BackLightSwitch").handle_beamstop(venum.OUT)
+        self.wait_ready()
+
     def set_phase(self, phase, wait=False, timeout=None):
         if self._ready():
             if phase in self.phases:
@@ -590,15 +602,6 @@ class Microdiff(MiniDiff.MiniDiff):
             self.beam_position_horizontal.get_value(),
             self.beam_position_vertical.get_value(),
         )
-
-
-def set_light_in(light, light_motor, zoom):
-    self.frontlight.set_value(0)
-    MICRODIFF.get_object_by_role("BackLightSwitch").actuatorIn()
-
-
-MiniDiff.set_light_in = set_light_in
-
 
 def to_float(d):
     for k, v in d.items():
