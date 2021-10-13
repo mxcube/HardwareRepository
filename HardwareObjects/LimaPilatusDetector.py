@@ -259,7 +259,7 @@ class LimaPilatusDetector(AbstractDetector):
         if dirname.startswith(os.path.sep):
             dirname = dirname[len(os.path.sep) :]
 
-        saving_directory = os.path.join(self.get_property("buffer"), dirname)
+        saving_directory = os.path.join(self.get_property("buffer", "/"), dirname)
 
         subprocess.Popen(
             "ssh %s@%s mkdir --parents %s"
