@@ -328,9 +328,6 @@ class TangoChannel(ChannelObject):
         self.emit("update", value)
 
     def getValue(self):
-       # self._device_initialized.wait(timeout=3)
-
-        
         if self.read_as_str:
             value = self.device.read_attribute(
                 self.attribute_name, PyTango.DeviceAttribute.ExtractAs.String
