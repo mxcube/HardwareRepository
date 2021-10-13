@@ -9,6 +9,7 @@ import collections
 import autoprocessing
 import gevent
 from HardwareRepository.TaskUtils import task, cleanup, error_cleanup
+from HardwareRepository.utils import nicoproc
 
 from HardwareRepository import HardwareRepository as HWR
 
@@ -785,6 +786,11 @@ class AbstractMultiCollect(object):
                         "Could not store data collection into LIMS"
                     )
 
+            if nicoproc.USE_NICOPROC:
+                print("AbstractMULTI_NICO")
+                print(data_collect_parameters)
+                nicoproc.start(data_collect_parameters, file_parameters)
+
             if HWR.beamline.lims and self.bl_config.input_files_server:
                 logging.getLogger("user_level_log").info(
                     "Asking for input files writing"
@@ -1172,7 +1178,7 @@ class AbstractMultiCollect(object):
 
     def stop_collect(self, owner=None):
         if self.data_collect_task is not None:
-            self.data_collect_task.kill(block=False)
+            self.data_collect_task.kill(block=True, timeout=120)
 
         self.data_collection_cleanup()
 
