@@ -1,6 +1,8 @@
 """
 FLEX HCD maintenance mockup.
 """
+import ast
+
 from HardwareRepository.BaseHardwareObjects import Equipment
 
 
@@ -144,6 +146,15 @@ class FlexHCDMaintenance(Equipment):
                 ],
             ],
         ]
+
+        exclude_command_list = ast.literal_eval(self.getProperty("exclude_commands", []))
+        new_command_list = []
+
+        for command in cmd_list[0][1]:
+            if command[0] not in exclude_command_list:
+                new_command_list.append(command)
+
+        cmd_list[0][1] = new_command_list
 
         try:
             grippers = self._sc.get_available_grippers()
