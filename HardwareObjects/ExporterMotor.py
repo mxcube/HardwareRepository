@@ -176,7 +176,7 @@ class ExporterMotor(AbstractMotor):
         """
         _v = self.motor_position.get_value()
 
-        if math.isnan(_v) or None:
+        if _v is None or math.isnan(_v):
             logging.getLogger("HWR").debug("Value of %s is NaN" % self.actuator_name)
             _v = self._nominal_value
 
