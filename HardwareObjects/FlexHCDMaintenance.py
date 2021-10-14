@@ -147,7 +147,7 @@ class FlexHCDMaintenance(Equipment):
             ],
         ]
 
-        exclude_command_list = ast.literal_eval(self.getProperty("exclude_commands", []))
+        exclude_command_list = ast.literal_eval(self.getProperty("exclude_commands", "[]"))
         new_command_list = []
 
         for command in cmd_list[0][1]:
