@@ -66,7 +66,7 @@ class ESRFPhotonFlux(AbstractFlux):
         else:
             self._counter = self.get_object_by_role("counter")
 
-        beam_check = self.getProperty("beam_check_name")
+        beam_check = self.get_property("beam_check_name")
         if beam_check:
             self.beam_check = getattr(controller, beam_check)
 

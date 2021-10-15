@@ -28,6 +28,7 @@ from HardwareRepository.CommandContainer import (
     ChannelObject,
     ConnectionError,
 )
+
 from HardwareRepository import Poller
 from HardwareRepository.dispatcher import saferef
 
@@ -114,7 +115,7 @@ def process_tango_events():
     while not TangoChannel._tangoEventsQueue.empty():
         try:
             ev = TangoChannel._tangoEventsQueue.get_nowait()
-        except Queue.Empty:
+        except _threading.Queue.Empty:
             break
         else:
             try:
@@ -139,7 +140,7 @@ class TangoChannel(ChannelObject):
     _eventReceivers = {}
 
     if gevent_version < [1,3,0]:
-        _tangoEventsProcessingTimer = gevent.get_hub().loop.async()
+        _tangoEventsProcessingTimer = getattr(gevent.get_hub().loop, "async")()
     else:
         _tangoEventsProcessingTimer = gevent.get_hub().loop.async_()
 
@@ -327,7 +328,7 @@ class TangoChannel(ChannelObject):
         self.value = value
         self.emit("update", value)
 
-    def getValue(self):
+    def get_value(self):
         if self.read_as_str:
             value = self.device.read_attribute(
                 self.attribute_name, PyTango.DeviceAttribute.ExtractAs.String
@@ -349,4 +350,3 @@ class TangoChannel(ChannelObject):
 
     def is_connected(self):
         return self.device is not None
-

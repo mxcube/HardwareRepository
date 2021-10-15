@@ -59,7 +59,7 @@ class BlissNState(AbstractNState):
         self._prefix = self.get_property("prefix")
         self._bliss_obj = getattr(self.get_object_by_role("controller"), _name)
 
-        self.device_type = self.getProperty("type", "actuator")
+        self.device_type = self.get_property("type", "actuator")
         if "MultiplePositions" in self._bliss_obj.__class__.__name__:
             self.device_type = "motor"
 

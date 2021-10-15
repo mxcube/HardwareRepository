@@ -207,7 +207,7 @@ class Microdiff(MiniDiff.MiniDiff):
         self.wait_ready = self._wait_ready
         self.pixelsPerMmY, self.pixelsPerMmZ = self.getCalibrationData(None)
 
-        self.readPhase.connectSignal("update", self._update_value)
+        self.readPhase.connect_signal("update", self._update_value)
 
     def _update_value(self, value=None):
         if value is None:
@@ -267,7 +267,7 @@ class Microdiff(MiniDiff.MiniDiff):
 
     def open_detector_cover(self):
         try:
-            detcover = self.getObjectByRole("controller").detcover
+            detcover = self.get_object_by_role("controller").detcover
 
             if detcover.state == "IN":
                 detcover.set_out(10)
@@ -276,7 +276,7 @@ class Microdiff(MiniDiff.MiniDiff):
 
     def close_detector_cover(self):
         try:
-            detcover = self.getObjectByRole("controller").detcover
+            detcover = self.get_object_by_role("controller").detcover
 
             if detcover.state == "OUT":
                 detcover.set_in(10)
@@ -286,7 +286,7 @@ class Microdiff(MiniDiff.MiniDiff):
     def phase_prepare(self, phase):
         if phase == "Centring":
             try:
-                diffr = self.getObjectByRole("controller").diffractometer
+                diffr = self.get_object_by_role("controller").diffractometer
                 diffr.prepare("centre")
             except:
                 logging.getLogger("HWR").exception("Cannot prepare centring")

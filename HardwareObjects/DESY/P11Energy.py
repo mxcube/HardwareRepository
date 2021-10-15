@@ -37,11 +37,11 @@ class P11Energy(AbstractEnergy):
     def init(self):
         self.chan_energy = self.get_channel_object("chanEnergy")
         if self.chan_energy is not None:
-            self.chan_energy.connectSignal("update", self.energy_position_changed)
+            self.chan_energy.connect_signal("update", self.energy_position_changed)
 
         self.chan_status = self.get_channel_object("chanStatus")
         if self.chan_status is not None:
-            self.chan_status.connectSignal("update", self.energy_state_changed)
+            self.chan_status.connect_signal("update", self.energy_state_changed)
 
         limits = self.get_property('limits',None)
 

@@ -706,11 +706,11 @@ class AbstractMultiCollect(object):
             #if not self.safety_shutter_opened():
             self.open_safety_shutter()
 
-            flux_threshold = self.getProperty("flux_threshold", 0)
-            cryo_threshold = self.getProperty("cryo_threshold", 0)
+            flux_threshold = self.get_property("flux_threshold", 0)
+            cryo_threshold = self.get_property("cryo_threshold", 0)
 
-            check_flux = self.getProperty("check_flux", False)
-            check_cryo = self.getProperty("check_cryo", False)
+            check_flux = self.get_property("check_flux", False)
+            check_cryo = self.get_property("check_cryo", False)
 
             if check_flux:
                 HWR.beamline.flux.wait_for_beam()
@@ -1096,7 +1096,7 @@ class AbstractMultiCollect(object):
                         ),
                     )
 
-            if self.getProperty("close_safety_shutter_if_idle", False):
+            if self.get_property("close_safety_shutter_if_idle", False):
                 try:
                     self.__safety_shutter_close_task = gevent.spawn_later(
                         10 * 60, self.close_safety_shutter, timeout=10

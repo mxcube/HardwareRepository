@@ -20,7 +20,7 @@
 
 import time
 import logging
-import Queue
+import queue
 import weakref
 
 from HardwareRepository.CommandContainer import CommandObject, ChannelObject

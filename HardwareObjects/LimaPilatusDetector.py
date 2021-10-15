@@ -110,7 +110,7 @@ class LimaPilatusDetector(AbstractDetector):
                 "update", self.roi_mode_changed
             )
 
-            self.get_command_object("prepare_acq").setDeviceTimeout(10000)
+            self.get_command_object("prepare_acq").set_device_timeout(10000)
             self._emit_status()
 
         except ConnectionError:
@@ -296,7 +296,7 @@ class LimaPilatusDetector(AbstractDetector):
 
         self.header = headers
 
-     def start_acquisition(self):
+    def start_acquisition(self):
         self.wait_ready()
         self.execute_command("stop_acq")
         self.execute_command("prepare_acq")

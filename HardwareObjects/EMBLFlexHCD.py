@@ -117,17 +117,17 @@ class EMBLFlexHCD(SampleChanger):
 
     def init(self):
         _pucks = '["UNI", "UNI", "UNI", "UNI", "UNI", "UNI", "UNI", "UNI"]'
-        pucks = ast.literal_eval(self.getProperty("puck_configuration", _pucks))
+        pucks = ast.literal_eval(self.get_property("puck_configuration", _pucks))
 
         for i in range(8):
             cell = Cell(self, i + 1, pucks[i])
             self._add_component(cell)
 
-        self.robot = self.getProperty("tango_device")
+        self.robot = self.get_property("tango_device")
         if self.robot:
             self.robot = DeviceProxy(self.robot)
 
-        self.exporter_addr = self.getProperty("exporter_address")
+        self.exporter_addr = self.get_property("exporter_address")
 
         self.swstate_attr = self.add_channel(
             {
@@ -138,7 +138,7 @@ class EMBLFlexHCD(SampleChanger):
             "State",
         )
 
-        self.controller = self.getObjectByRole("controller")
+        self.controller = self.get_object_by_role("controller")
         self.prepareLoad = self.get_command_object("moveToLoadingPosition")
         self.timeout = 3
         self.gripper_types = {

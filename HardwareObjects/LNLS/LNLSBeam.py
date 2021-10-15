@@ -41,7 +41,7 @@ class LNLSBeam(AbstractBeam):
         self._beam_divergence = (0, 0)
 
     def init(self):
-        self._aperture = self.getObjectByRole("aperture")
+        self._aperture = self.get_object_by_role("aperture")
         if self._aperture is not None:
             self.connect(
                 self._aperture,
@@ -52,14 +52,14 @@ class LNLSBeam(AbstractBeam):
             ad = self._aperture.get_diameter_size() / 1000.0
             self._beam_size_dict["aperture"] = [ad, ad]
 
-        self._slits = self.getObjectByRole("slits")
+        self._slits = self.get_object_by_role("slits")
         if self._slits is not None:
             self.connect(self._slits, "valueChanged", self.slits_gap_changed)
 
             sx, sy = self._slits.get_gaps()
             self._beam_size_dict["slits"] = [sx, sy]
 
-        beam_pos = self.getProperty("default_beam_pos_on_screen")
+        beam_pos = self.get_property("default_beam_pos_on_screen")
         self._beam_position_on_screen = list(ast.literal_eval(beam_pos))
 
         self.evaluate_beam_info()

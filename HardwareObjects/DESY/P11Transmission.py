@@ -56,10 +56,10 @@ class P11Transmission(AbstractTransmission):
         self.chan_state = self.get_channel_object('chanState')
 
         if self.chan_read_value is not None:
-            self.chan_read_value.connectSignal("update", self.value_changed)
+            self.chan_read_value.connect_signal("update", self.value_changed)
 
         if self.chan_state is not None:
-            self.chan_state.connectSignal("update", self.state_changed)
+            self.chan_state.connect_signal("update", self.state_changed)
 
         self.re_emit_values()
 
