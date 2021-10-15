@@ -20,12 +20,16 @@
 
 import time
 import logging
-import queue
 import weakref
 import atexit
 
 import gevent
 import tine
+
+try:
+    import Queue as queue
+except ImportError:
+    import queue
 
 from HardwareRepository.CommandContainer import CommandObject, ChannelObject
 

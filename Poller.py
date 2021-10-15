@@ -8,11 +8,18 @@ import numpy
 
 import logging
 
+try:
+    import Queue as queue
+except ImportError:
+    import queue
+
+
 log = logging.getLogger("HWR")
 
 POLLERS = {}
 
-gevent_version = list(map(int,gevent.__version__.split('.')))
+gevent_version = list(map(int, gevent.__version__.split('.')))
+
 
 class _NotInitializedValue:
     pass
@@ -82,11 +89,11 @@ class _Poller:
         self.error_callback_ref = saferef.safe_ref(error_callback)
         self.compare = compare
         self.old_res = NotInitializedValue
-        self.queue = _threading.Queue()
+        self.queue = queue.Queue()
         self.delay = 0
         self.stop_event = Event()
 
-        if gevent_version < [1,3,0]:
+        if gevent_version < [1, 3, 0]:
             self.async_watcher = getattr(gevent.get_hub().loop, "async")()
         else:
             self.async_watcher = gevent.get_hub().loop.async_()
@@ -134,7 +141,7 @@ class _Poller:
         while True:
             try:
                 res = self.queue.get_nowait()
-            except _threading.Queue.Empty:
+            except queue.Empty:
                 break
 
             if isinstance(res, PollingException):
@@ -202,9 +209,8 @@ class _Poller:
                 if new_value:
                     self.old_res = res
                     self.queue.put(res)
-                    #self.async_watcher.send()
+                    # self.async_watcher.send()
             sleep(self.polling_period / 1000.0)
 
         if error_cb is not None:
             self.async_watcher.send()
-

@@ -19,10 +19,13 @@
 #  along with MXCuBE. If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import queue
 import weakref
 import qt
-import types
+
+try:
+    import Queue as queue
+except ImportError:
+    import queue
 
 from HardwareRepository.CommandContainer import (
     CommandObject,
