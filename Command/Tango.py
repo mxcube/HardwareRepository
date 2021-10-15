@@ -20,17 +20,25 @@
 
 import logging
 import gevent
-import gevent.event
-from gevent.queue import Queue
+from gevent.event import Event
+from gevent import _threading
+
 from HardwareRepository.CommandContainer import (
     CommandObject,
     ChannelObject,
     ConnectionError,
 )
+
 from HardwareRepository import Poller
 from HardwareRepository.dispatcher import saferef
 
-gevent_version = list(map(int,gevent.__version__.split('.')))
+try:
+    import Queue as queue
+except ImportError:
+    import queue
+
+
+gevent_version = list(map(int, gevent.__version__.split('.')))
 
 try:
     import PyTango
@@ -44,6 +52,7 @@ __copyright__ = """ Copyright © 2010 - 2020 by MXCuBE Collaboration """
 __license__ = "LGPLv3+"
 
 log = logging.getLogger("HWR")
+
 
 class TangoCommand(CommandObject):
     def __init__(self, name, command, tangoname=None, username=None, **kwargs):
@@ -113,7 +122,7 @@ def process_tango_events():
     while not TangoChannel._tangoEventsQueue.empty():
         try:
             ev = TangoChannel._tangoEventsQueue.get_nowait()
-        except Queue.Empty:
+        except queue.Empty:
             break
         else:
             try:
@@ -134,11 +143,11 @@ class E:
 
 
 class TangoChannel(ChannelObject):
-    _tangoEventsQueue = Queue()
+    _tangoEventsQueue = queue.Queue()
     _eventReceivers = {}
 
-    if gevent_version < [1,3,0]:
-        _tangoEventsProcessingTimer = gevent.get_hub().loop.async()
+    if gevent_version < [1, 3, 0]:
+        _tangoEventsProcessingTimer = getattr(gevent.get_hub().loop, "async")()
     else:
         _tangoEventsProcessingTimer = gevent.get_hub().loop.async_()
 
@@ -198,9 +207,8 @@ class TangoChannel(ChannelObject):
         # self.init_poller.stop()
 
         if isinstance(self.polling, int):
+            self.raw_device = DeviceProxy(self.deviceName)
 
-            self.raw_device = RawDeviceProxy(self.device_name)
-            
             Poller.poll(
                 self.poll,
                 polling_period=self.polling,
@@ -327,10 +335,7 @@ class TangoChannel(ChannelObject):
         self.value = value
         self.emit("update", value)
 
-    def get_value(self, force=False):
-        self._device_initialized.wait(timeout=3)
-
-        
+    def get_value(self):
         if self.read_as_str:
             value = self.device.read_attribute(
                 self.attribute_name, PyTango.DeviceAttribute.ExtractAs.String
@@ -352,4 +357,3 @@ class TangoChannel(ChannelObject):
 
     def is_connected(self):
         return self.device is not None
-

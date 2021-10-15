@@ -337,7 +337,7 @@ class LNLSCamera(BaseHardwareObjects.Device):
 
             if live:
                 logging.getLogger("HWR").info("LNLSCamera is going to poll images")
-                self.delay = float(int(self.getProperty("interval"))/1000.0)
+                self.delay = float(int(self.get_property("interval"))/1000.0)
                 thread = Thread(target=self.poll)
                 thread.daemon = True
                 thread.start()

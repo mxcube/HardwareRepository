@@ -26,7 +26,7 @@ class EPICSNState(AbstractNState, EPICSActuator):
 
     def init(self):
         AbstractNState.initialise_values(self)
-        self.username = self.getProperty("username")
+        self.username = self.get_property("username")
         self.states = dict((item.value, item.name) for item in self.VALUES)
         self.moves = dict((item.name, item.value) for item in self.VALUES)
         self.get_actuator_state()

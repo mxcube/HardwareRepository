@@ -20,12 +20,16 @@
 
 import time
 import logging
-import Queue
 import weakref
 import atexit
 
 import gevent
 import tine
+
+try:
+    import Queue as queue
+except ImportError:
+    import queue
 
 from HardwareRepository.CommandContainer import CommandObject, ChannelObject
 
@@ -103,7 +107,7 @@ def emit_tine_channel_updates():
     while not TineChannel.updates.empty():
         try:
             channel_obj_ref, value = TineChannel.updates.get()
-        except Queue.Empty:
+        except queue.Empty:
             break
         else:
             channel_object = channel_obj_ref()
@@ -126,7 +130,7 @@ def do_tine_channel_update(sleep_time):
 class TineChannel(ChannelObject):
     attach = {"timer": tine.attach, "event": tine.notify, "datachange": tine.update}
 
-    updates = Queue.Queue()
+    updates = queue.Queue()
     # updates_emitter = QtCore.QTimer()
     # QtCore.QObject.connect(updates_emitter, QtCore.SIGNAL('timeout()'), emit_tine_channel_updates)
     # updates_emitter.start(20)

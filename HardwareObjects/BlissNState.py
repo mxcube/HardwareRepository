@@ -59,7 +59,7 @@ class BlissNState(AbstractNState):
         self._prefix = self.get_property("prefix")
         self._bliss_obj = getattr(self.get_object_by_role("controller"), _name)
 
-        self.device_type = "actuator"
+        self.device_type = self.get_property("type", "actuator")
         if "MultiplePositions" in self._bliss_obj.__class__.__name__:
             self.device_type = "motor"
 
@@ -91,7 +91,7 @@ class BlissNState(AbstractNState):
                 _val = _cmd()
             else:
                 _val = self._bliss_obj.state
-
+        # print(f"get_value:  {self.value_to_enum(_val)}, {_val}")
         return self.value_to_enum(_val)
 
     def _set_value(self, value):
@@ -109,7 +109,7 @@ class BlissNState(AbstractNState):
         else:
             self.__saved_state = value.upper()
         if self.device_type == "motor":
-            self._bliss_obj.move(value, wait=False)
+            self._bliss_obj.move(svalue, wait=False)
         elif self.device_type == "actuator":
             if self._prefix:
                 _attr = self._prefix + "_" + value.name.lower()
@@ -127,7 +127,7 @@ class BlissNState(AbstractNState):
             _state = self._bliss_obj.state.upper()
         except (AttributeError, KeyError):
             return self.STATES.UNKNOWN
-        
+
         if _state in ("IN", "OUT"):
             if self.__saved_state == _state:
                 _state = self.STATES.READY
@@ -155,8 +155,11 @@ class BlissNState(AbstractNState):
         if self.device_type == "actuator":
             super(BlissNState, self).initialise_values()
         if self.device_type == "motor":
-            values = {val.upper(): val for val in self.bliss_obj.positions_list}
-            self.VALUES = Enum(
-                "ValueEnum",
-                dict(values, **{item.name: item.value for item in BaseValueEnum}),
-            )
+            try:
+                values = {val.upper(): val for val in self._bliss_obj.positions_list}
+                self.VALUES = Enum(
+                    "ValueEnum",
+                    dict(values, **{item.name: item.value for item in BaseValueEnum}),
+                )
+            except AttributeError:
+                super().initialise_values()

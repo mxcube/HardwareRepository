@@ -42,12 +42,12 @@ class P11DetectorDistance(AbstractMotor):
     def init(self):
         self.chan_state = self.get_channel_object('axisState')
         if self.chan_state is not None:
-           self.chan_state.connectSignal("update", self._set_state)
+           self.chan_state.connect_signal("update", self._set_state)
         self._set_state()
 
         self.chan_position = self.get_channel_object('axisPosition')
         if self.chan_position is not None:
-            self.chan_position.connectSignal("update", self.update_value)
+            self.chan_position.connect_signal("update", self.update_value)
         self.update_value()
 
         self.chan_min_value = self.get_channel_object('axisMinValue')
@@ -55,13 +55,13 @@ class P11DetectorDistance(AbstractMotor):
 
         self.chan_interlock_state = self.get_channel_object('interlockState')
         if self.chan_interlock_state is not None:
-           self.chan_interlock_state.connectSignal("update", self.interlock_state_changed)
+           self.chan_interlock_state.connect_signal("update", self.interlock_state_changed)
         self.interlock_state_changed()
 
         self.cmd_stop = self.get_command_object("stopAxis")
         if self.cmd_stop:
-            self.cmd_stop.connectSignal("connected", self.connected)
-            self.cmd_stop.connectSignal("disconnected", self.disconnected)
+            self.cmd_stop.connect_signal("connected", self.connected)
+            self.cmd_stop.connect_signal("disconnected", self.disconnected)
 
     def connectNotify(self, signal):
         """

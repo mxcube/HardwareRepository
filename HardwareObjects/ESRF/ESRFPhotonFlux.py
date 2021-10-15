@@ -66,6 +66,10 @@ class ESRFPhotonFlux(AbstractFlux):
         else:
             self._counter = self.get_object_by_role("counter")
 
+        beam_check = self.get_property("beam_check_name")
+        if beam_check:
+            self.beam_check = getattr(controller, beam_check)
+
         HWR.beamline.safety_shutter.connect("stateChanged", self.update_value)
         self._poll_task = gevent.spawn(self._poll_flux)
 
@@ -98,3 +102,20 @@ class ESRFPhotonFlux(AbstractFlux):
             counts = 0.0
 
         return counts
+
+    def check_beam(self):
+        """Check if there is beam
+        Returns:
+            (bool): True if beam present, False otherwise
+        """
+        return self.beam_check.check_beam()
+
+    def wait_for_beam(self, timeout=None):
+        """Wait until beam present
+        Args:
+            timeout (float): optional - timeout [s],
+                             If timeout == 0: return at once and do not wait
+                                              (default);
+                             if timeout is None: wait forever.
+        """
+        self.beam_check.wait_for_beam(timeout)

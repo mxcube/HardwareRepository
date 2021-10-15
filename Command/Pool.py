@@ -19,10 +19,13 @@
 #  along with MXCuBE. If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import Queue
 import weakref
 import qt
-import types
+
+try:
+    import Queue as queue
+except ImportError:
+    import queue
 
 from HardwareRepository.CommandContainer import (
     CommandObject,
@@ -126,7 +129,7 @@ def process_tango_events():
     while not PoolChannel._tangoEventsQueue.empty():
         try:
             event = PoolChannel._tangoEventsQueue.get_nowait()
-        except Queue.Empty:
+        except queue.Empty:
             break
         else:
             try:
@@ -142,7 +145,7 @@ def process_tango_events():
 
 
 class PoolChannel(ChannelObject):
-    _tangoEventsQueue = Queue.Queue()
+    _tangoEventsQueue = queue.Queue()
     _eventReceivers = {}
     _tangoEventsProcessingTimer = qt.QTimer()
 

@@ -39,6 +39,10 @@ class QueueManager(HardwareObject, QueueEntryContainer):
         self.__dict__.update(d)
         self._paused_event = gevent.event.Event()
 
+    @property
+    def current_queue_entries(self):
+        return self._current_queue_entries
+
     def enqueue(self, queue_entry):
         """
         Method inherited from QueueEntryContainer, enqueues the QueueEntry
@@ -57,6 +61,7 @@ class QueueManager(HardwareObject, QueueEntryContainer):
         Starts execution of the queue.
         """
         if not self.is_disabled():
+            self._current_queue_entries = []
             self.emit("statusMessage", ("status", "Queue running", "running"))
             self._is_stopped = False
             self._set_in_queue_flag()
@@ -143,15 +148,13 @@ class QueueManager(HardwareObject, QueueEntryContainer):
         finally:
             self._running = False
             self.emit("queue_execution_finished", (None,))
-            # self.emit('centringAllowed', (True, ))
 
     def __execute_entry(self, entry):
         if not entry.is_enabled() or self._is_stopped:
             return
 
         status = "Successful"
-        # self.emit('centringAllowed', (False, ))
-        self.emit("queue_entry_execute_started", (entry))
+        self.emit("queue_entry_execute_started", (entry, ))
         self.set_current_entry(entry)
         self._current_queue_entries.append(entry)
 
@@ -210,7 +213,7 @@ class QueueManager(HardwareObject, QueueEntryContainer):
         finally:
             # self.emit('queue_entry_execute_finished', (entry, ))
             self.set_current_entry(None)
-            self._current_queue_entries.remove(entry)
+            self._current_queue_entries.pop(self._current_queue_entries.index(entry))
 
     def stop(self):
         """
@@ -222,7 +225,7 @@ class QueueManager(HardwareObject, QueueEntryContainer):
         if self._queue_entry_list:
             for qe in self._current_queue_entries:
                 try:
-                    qe.QUEUE_ENTRY_STATUS.FAILED
+                    qe.status = QUEUE_ENTRY_STATUS.FAILED
                     self.emit("queue_entry_execute_finished", (qe, "Aborted"))
                     qe.stop()
                     qe.post_execute()

@@ -29,9 +29,13 @@ from HardwareRepository.dispatcher import saferef
 import gevent
 from gevent.event import Event
 from gevent import monkey
-import Queue
 
-gevent_version = list(map(int,gevent.__version__.split('.')))
+try:
+    import Queue as queue
+except ImportError:
+    import queue
+
+gevent_version = list(map(int, gevent.__version__.split('.')))
 
 
 from HardwareRepository.CommandContainer import (
@@ -65,7 +69,7 @@ def processSardanaEvents():
 
         try:
             ev = SardanaObject._eventsQueue.get_nowait()
-        except Queue.Empty:
+        except queue.Empty:
             break
         else:
             try:
@@ -99,14 +103,13 @@ class AttributeEvent:
 
 
 class SardanaObject(object):
-    _eventsQueue = Queue.Queue()
+    _eventsQueue = queue.Queue()
     _eventReceivers = {}
 
-    if gevent_version < [1,3,0]:
-        _eventsProcessingTimer = gevent.get_hub().loop.async()
+    if gevent_version < [1, 3, 0]:
+        _eventsProcessingTimer = getattr(gevent.get_hub().loop, "async")()
     else:
         _eventsProcessingTimer = gevent.get_hub().loop.async_()
-
 
     # start Sardana events processing timer
     _eventsProcessingTimer.start(processSardanaEvents)

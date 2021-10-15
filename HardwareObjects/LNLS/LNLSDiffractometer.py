@@ -57,9 +57,9 @@ class LNLSDiffractometer(GenericDiffractometer):
         self.pixels_per_mm_x = 1.0 / self.x_calib
         self.pixels_per_mm_y = 1.0 / self.y_calib
         if "zoom" not in self.motor_hwobj_dict.keys():
-            self.motor_hwobj_dict["zoom"] = self.getObjectByRole("zoom")
-        calibration_x = self.zoom.getProperty("mm_per_pixel_x")
-        calibration_y = self.zoom.getProperty("mm_per_pixel_y")
+            self.motor_hwobj_dict["zoom"] = self.get_object_by_role("zoom")
+        calibration_x = self.zoom.get_property("mm_per_pixel_x")
+        calibration_y = self.zoom.get_property("mm_per_pixel_y")
         self.zoom_calibration_x = ast.literal_eval(calibration_x)
         self.zoom_calibration_y = ast.literal_eval(calibration_y)
 
@@ -88,7 +88,7 @@ class LNLSDiffractometer(GenericDiffractometer):
         # self.image_width = 400
         # self.image_height = 400
 
-        self.mount_mode = self.getProperty("sample_mount_mode")
+        self.mount_mode = self.get_property("sample_mount_mode")
         if self.mount_mode is None:
             self.mount_mode = "manual"
 

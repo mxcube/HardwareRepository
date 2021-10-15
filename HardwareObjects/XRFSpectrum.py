@@ -4,13 +4,16 @@ import shutil
 import time
 import gevent.event
 import gevent
-from HardwareRepository.BaseHardwareObjects import Equipment
+from HardwareRepository.BaseHardwareObjects import Equipment, HardwareObject
+
 from HardwareRepository import HardwareRepository as HWR
 
 
-class XRFSpectrum(Equipment):
+# class XRFSpectrum(Equipment):
+class XRFSpectrum(HardwareObject):
     def __init__(self, *args, **kwargs):
-        Equipment.__init__(self, *args, **kwargs)
+        HardwareObject.__init__(self, *args, **kwargs)
+        #Equipment.__init__(self, *args, **kwargs)
         self.config_data = None
         self.calib_data = None
         self.energy_spectrum_args = None

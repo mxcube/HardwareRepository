@@ -41,16 +41,16 @@ class LNLSPilatusDet(AbstractDetector):
         self._roi_mode = 0
         self._exposure_time_limits = [0.04, 60000]
         self.status = "ready"
-        self.pv_status = epics.PV(self.getProperty("channel_status"))
+        self.pv_status = epics.PV(self.get_property("channel_status"))
         self.threshold = -1  # Starts with invalid value. To be set.
         self.wavelength = -1
         self.det_distance = -1
         self.beam_x = -1
         self.beam_y = -1
-        self.default_beam_x = float(self.getProperty("default_beam_x"))
-        self.default_beam_y = float(self.getProperty("default_beam_y"))
+        self.default_beam_x = float(self.get_property("default_beam_x"))
+        self.default_beam_y = float(self.get_property("default_beam_y"))
 
-        self._distance_motor_hwobj = self.getObjectByRole("detector_distance")
+        self._distance_motor_hwobj = self.get_object_by_role("detector_distance")
         self.threshold = self.get_threshold_energy()
 
     def set_roi_mode(self, roi_mode):
@@ -67,8 +67,8 @@ class LNLSPilatusDet(AbstractDetector):
         xval, yval = super(LNLSPilatusDet, self).get_beam_position(distance=distance)
         if None in (xval, yval):
             # default to Pilatus values
-            xval = self.getProperty("width", 2463) / 2.0 + 0.4
-            yval = self.getProperty("height", 2527) / 2.0 + 0.4
+            xval = self.get_property("width", 2463) / 2.0 + 0.4
+            yval = self.get_property("height", 2527) / 2.0 + 0.4
         return xval, yval
 
     def update_values(self):

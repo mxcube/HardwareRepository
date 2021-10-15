@@ -1150,7 +1150,7 @@ class XRFSpectrum(TaskNode):
         return display_name
 
     def set_count_time(self, count_time):
-        self.count_time = count_time
+        self.count_time = count_time or self.count_time
 
     def is_collected(self):
         return self.is_executed()
